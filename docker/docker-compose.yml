@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_PID=Express
+
+  php:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: php-app
+    depends_on:
+      - mssql
+    ports:
+      - "8080:80"
+    environment:
+      - DB_SERVER=mssql
+      - DB_USER=SA
+      - DB_PASSWORD=YourStrong!Passw0rd
+      - GLOBAL_DB=GlobalDB
+    volumes:
+      - ../src:/var/www/html
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - mssql
+    entrypoint: ["bash", "-c", "/opt/mssql-tools/bin/sqlcmd -S mssql -U SA -P YourStrong!Passw0rd -d master -i /init/init-db.sql"]
+    volumes:
+      - ../sql:/init
+
+networks:
+  default:
+    name: distributed-net
