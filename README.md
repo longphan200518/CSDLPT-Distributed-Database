@@ -118,18 +118,19 @@ SELECT * FROM SiteC.dbo.DoiBong;
 
 | Fragment | Thuộc tính | Site | Mục đích |
 |----------|-----------|------|----------|
-| HLV_Basic | MaHLV, HoTen, QuocTich | SiteA | Thông tin công khai |
-| HLV_Additional | MaHLV, MaDB, NgaySinh, SoDienThoai | SiteB | Thông tin nhạy cảm |
-| HLV_History | MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich | SiteC | Lịch sử sự nghiệp |
+| HLV_Basic | MaHLV, HoTen, QuocTich | SiteA | Thông tin cơ bản |
+| HLV_Additional | MaHLV, MaDB | SiteB | Thông tin bổ sung |
+| HLV_History | MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich | SiteC | Lịch sử (tuỳ chọn) |
 
-**View toàn cục** (JOIN 3 fragments):
+**View toàn cục** (LEFT JOIN cho phép fragment không đầy đủ):
 ```sql
 CREATE VIEW HuanLuyenVien AS
-SELECT b.*, a.MaDB, a.NgaySinh, a.SoDienThoai,
+SELECT b.MaHLV, b.HoTen, b.QuocTich,
+       a.MaDB, a.NgaySinh, a.SoDienThoai,
        h.NamKinhNghiem, h.ChucVuTruoc, h.ThanhTich
 FROM SiteA.dbo.HLV_Basic b
-JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
-JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
+LEFT JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
+LEFT JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
 ```
 
 ### 4.3. Trigger tự động định tuyến
@@ -192,9 +193,9 @@ END;
    ```
 
 **Phân mảnh dọc:**
-4. **HLV theo giải đấu** (JOIN 3 fragments dọc + phân mảnh ngang)
+4. **HLV theo giải đấu** (JOIN fragments dọc + phân mảnh ngang)
    ```sql
-   SELECT h.HoTen, h.QuocTich, h.NamKinhNghiem, d.TenDB
+   SELECT h.HoTen, h.QuocTich, d.TenDB
    FROM HuanLuyenVien h
    JOIN DoiBong d ON h.MaDB=d.MaDB
    WHERE d.GiaiDau='La Liga'

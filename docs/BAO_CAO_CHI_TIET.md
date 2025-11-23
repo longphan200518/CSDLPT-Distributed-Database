@@ -215,8 +215,8 @@ SELECT * FROM HuanLuyenVien WHERE QuocTich = 'Tây Ban Nha';
 
 -- Dữ liệu thực tế JOIN từ 3 site:
 -- SiteA.HLV_Basic (Họ tên, Quốc tịch)
--- SiteB.HLV_Additional (Đội bóng, SĐT)
--- SiteC.HLV_History (Kinh nghiệm, Thành tích)
+-- SiteB.HLV_Additional (Đội bóng)
+-- SiteC.HLV_History (Kinh nghiệm, Thành tích - tuỳ chọn)
 ```
 
 #### 2.2.3. Trong suốt nhân bản (Replication Transparency)
@@ -287,16 +287,17 @@ SiteC: ABS(MaDB) % 3 = 2  → {2, 3, 5, 8, 11, 14, 17}
 ```sql
 -- HuanLuyenVien được chia theo cột
 SiteA.HLV_Basic:      {MaHLV, HoTen, QuocTich}
-SiteB.HLV_Additional: {MaHLV, MaDB, NgaySinh, SoDienThoai}
+SiteB.HLV_Additional: {MaHLV, MaDB}
 SiteC.HLV_History:    {MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich}
 
--- View toàn cục JOIN lại
+-- View toàn cục LEFT JOIN (cho phép fragment không đầy đủ)
 CREATE VIEW HuanLuyenVien AS
-SELECT b.*, a.MaDB, a.NgaySinh, a.SoDienThoai, 
+SELECT b.MaHLV, b.HoTen, b.QuocTich,
+       a.MaDB, a.NgaySinh, a.SoDienThoai,
        h.NamKinhNghiem, h.ChucVuTruoc, h.ThanhTich
 FROM SiteA.dbo.HLV_Basic b
-JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
-JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
+LEFT JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
+LEFT JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
 ```
 
 **Bước 3: Phân bố dữ liệu (Allocation)**
@@ -481,7 +482,7 @@ HAVING SUM(t.SoTrai) = (
 | Fragment | Thuộc tính | Site |
 |----------|-----------|------|
 | HLV_Basic | MaHLV, HoTen, QuocTich | SiteA |
-| HLV_Additional | MaHLV, MaDB, NgaySinh, SoDienThoai | SiteB |
+| HLV_Additional | MaHLV, MaDB | SiteB |
 | HLV_History | MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich | SiteC |
 
 ### 3.3. Phân mảnh chi tiết
@@ -523,13 +524,13 @@ DoiBong = DoiBong_A ∪ DoiBong_B ∪ DoiBong_C
 HLV_Basic = Π_{MaHLV, HoTen, QuocTich} (HuanLuyenVien)
 
 -- Fragment 2: Thông tin bổ sung (SiteB)
-HLV_Additional = Π_{MaHLV, MaDB, NgaySinh, SoDienThoai} (HuanLuyenVien)
+HLV_Additional = Π_{MaHLV, MaDB} (HuanLuyenVien)
 
 -- Fragment 3: Lịch sử sự nghiệp (SiteC)
 HLV_History = Π_{MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich} (HuanLuyenVien)
 
--- Tái tạo
-HuanLuyenVien = HLV_Basic ⋈_{MaHLV} HLV_Additional ⋈_{MaHLV} HLV_History
+-- Tái tạo (LEFT JOIN cho phép fragment không đầy đủ)
+HuanLuyenVien = HLV_Basic ⟕_{MaHLV} HLV_Additional ⟕_{MaHLV} HLV_History
 ```
 
 #### 3.3.3. Lý do lựa chọn
