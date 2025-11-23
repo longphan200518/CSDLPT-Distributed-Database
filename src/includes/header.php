@@ -20,10 +20,14 @@ if(!isset($pageTitle)) { $pageTitle = 'Hệ thống phân tán'; }
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">CRUD</a>
           <ul class="dropdown-menu">
+            <li><h6 class="dropdown-header">Phân mảnh ngang</h6></li>
             <li><a class="dropdown-item" href="/crud/doibong.php">Đội bóng</a></li>
             <li><a class="dropdown-item" href="/crud/cauthu.php">Cầu thủ</a></li>
             <li><a class="dropdown-item" href="/crud/trandau.php">Trận đấu</a></li>
             <li><a class="dropdown-item" href="/crud/thamgia.php">Tham gia</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h6 class="dropdown-header">Phân mảnh dọc</h6></li>
+            <li><a class="dropdown-item" href="/crud/huanluyenvien.php"><strong>Huấn luyện viên</strong></a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -32,10 +36,12 @@ if(!isset($pageTitle)) { $pageTitle = 'Hệ thống phân tán'; }
             <li><a class="dropdown-item" href="/queries/clb_cauthu.php">Cầu thủ theo CLB</a></li>
             <li><a class="dropdown-item" href="/queries/so_tran_cauthu.php">Số trận cầu thủ</a></li>
             <li><a class="dropdown-item" href="/queries/so_tran_hoa.php">Số trận hòa</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/queries/hlv_theo_giaidau.php"><strong>HLV theo giải đấu</strong></a></li>
           </ul>
         </li>
       </ul>
-      <span class="small-muted">Mô phỏng trong suốt phân mảnh & vị trí</span>
+      <span class="small-muted">Phân mảnh ngang & dọc</span>
     </div>
   </div>
 </nav>

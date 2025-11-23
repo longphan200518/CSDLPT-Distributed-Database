@@ -6,10 +6,10 @@ include __DIR__.'/includes/header.php';
   <h1 class="display-6 mb-2">Hệ thống quản lý CSDL Phân Tán</h1>
   <p class="mb-0">Thao tác CRUD & truy vấn trên view toàn cục, dữ liệu tự động định tuyến tới các site vật lý.</p>
 </div>
-<div class="row g-4">
+<div class="row g-4 mb-3">
   <div class="col-md-6">
     <div class="card h-100">
-      <div class="card-header fw-semibold">CRUD</div>
+      <div class="card-header fw-semibold">CRUD - Phân mảnh ngang</div>
       <div class="card-body">
         <div class="list-group list-group-flush">
           <a class="list-group-item list-group-item-action" href="crud/doibong.php">Đội bóng</a>
@@ -28,6 +28,34 @@ include __DIR__.'/includes/header.php';
           <a class="list-group-item list-group-item-action" href="queries/clb_cauthu.php">Cầu thủ theo CLB</a>
           <a class="list-group-item list-group-item-action" href="queries/so_tran_cauthu.php">Số trận cầu thủ tham gia</a>
           <a class="list-group-item list-group-item-action" href="queries/so_tran_hoa.php">Số trận hòa tại sân đấu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card h-100 border-primary">
+      <div class="card-header fw-semibold bg-primary text-white">CRUD - Phân mảnh dọc <span class="badge badge-hash">NEW</span></div>
+      <div class="card-body">
+        <div class="list-group list-group-flush">
+          <a class="list-group-item list-group-item-action" href="crud/huanluyenvien.php">
+            <strong>Huấn luyện viên</strong>
+            <br><small class="text-muted">Dữ liệu chia theo cột: SiteA (thông tin cơ bản) + SiteB (bổ sung) + SiteC (lịch sử)</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 border-primary">
+      <div class="card-header fw-semibold bg-primary text-white">Truy vấn phân mảnh dọc <span class="badge badge-hash">NEW</span></div>
+      <div class="card-body">
+        <div class="list-group list-group-flush">
+          <a class="list-group-item list-group-item-action" href="queries/hlv_theo_giaidau.php">
+            <strong>HLV theo giải đấu</strong>
+            <br><small class="text-muted">JOIN 3 fragments dọc + DoiBong phân mảnh ngang</small>
+          </a>
         </div>
       </div>
     </div>

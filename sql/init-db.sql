@@ -15,6 +15,8 @@ IF OBJECT_ID('DoiBong') IS NULL CREATE TABLE DoiBong (MaDB INT PRIMARY KEY, TenD
 IF OBJECT_ID('CauThu') IS NULL CREATE TABLE CauThu (MaCT INT PRIMARY KEY, HoTen NVARCHAR(100), MaDB INT REFERENCES DoiBong(MaDB), ViTri NVARCHAR(50));
 IF OBJECT_ID('TranDau') IS NULL CREATE TABLE TranDau (MaTD INT PRIMARY KEY, MaDB1 INT, MaDB2 INT, TrongTai NVARCHAR(100), SanDau NVARCHAR(100));
 IF OBJECT_ID('ThamGia') IS NULL CREATE TABLE ThamGia (MaTD INT, MaCT INT, SoTrai INT DEFAULT 0, PRIMARY KEY(MaTD, MaCT));
+/* Vertical fragmentation: Basic info */
+IF OBJECT_ID('HLV_Basic') IS NULL CREATE TABLE HLV_Basic (MaHLV INT PRIMARY KEY, HoTen NVARCHAR(100), QuocTich NVARCHAR(50));
 GO
 USE SiteB;
 GO
@@ -22,6 +24,8 @@ IF OBJECT_ID('DoiBong') IS NULL CREATE TABLE DoiBong (MaDB INT PRIMARY KEY, TenD
 IF OBJECT_ID('CauThu') IS NULL CREATE TABLE CauThu (MaCT INT PRIMARY KEY, HoTen NVARCHAR(100), MaDB INT REFERENCES DoiBong(MaDB), ViTri NVARCHAR(50));
 IF OBJECT_ID('TranDau') IS NULL CREATE TABLE TranDau (MaTD INT PRIMARY KEY, MaDB1 INT, MaDB2 INT, TrongTai NVARCHAR(100), SanDau NVARCHAR(100));
 IF OBJECT_ID('ThamGia') IS NULL CREATE TABLE ThamGia (MaTD INT, MaCT INT, SoTrai INT DEFAULT 0, PRIMARY KEY(MaTD, MaCT));
+/* Vertical fragmentation: Additional info */
+IF OBJECT_ID('HLV_Additional') IS NULL CREATE TABLE HLV_Additional (MaHLV INT PRIMARY KEY, MaDB INT, NgaySinh DATE, SoDienThoai NVARCHAR(20));
 GO
 USE SiteC;
 GO
@@ -29,11 +33,37 @@ IF OBJECT_ID('DoiBong') IS NULL CREATE TABLE DoiBong (MaDB INT PRIMARY KEY, TenD
 IF OBJECT_ID('CauThu') IS NULL CREATE TABLE CauThu (MaCT INT PRIMARY KEY, HoTen NVARCHAR(100), MaDB INT REFERENCES DoiBong(MaDB), ViTri NVARCHAR(50));
 IF OBJECT_ID('TranDau') IS NULL CREATE TABLE TranDau (MaTD INT PRIMARY KEY, MaDB1 INT, MaDB2 INT, TrongTai NVARCHAR(100), SanDau NVARCHAR(100));
 IF OBJECT_ID('ThamGia') IS NULL CREATE TABLE ThamGia (MaTD INT, MaCT INT, SoTrai INT DEFAULT 0, PRIMARY KEY(MaTD, MaCT));
+/* Vertical fragmentation: Career history */
+IF OBJECT_ID('HLV_History') IS NULL CREATE TABLE HLV_History (MaHLV INT PRIMARY KEY, NamKinhNghiem INT, ChucVuTruoc NVARCHAR(100), ThanhTich NVARCHAR(MAX));
 GO
 
 /* Real football data - Teams with club and league info */
 USE SiteA;
 GO
+/* Vertical fragmentation data - Basic coach info */
+MERGE HLV_Basic AS target USING (VALUES 
+  (1,N'Pep Guardiola',N'Tây Ban Nha'),
+  (2,N'Mikel Arteta',N'Tây Ban Nha'),
+  (3,N'Jürgen Klopp',N'Đức'),
+  (4,N'Carlo Ancelotti',N'Ý'),
+  (5,N'Xavi Hernández',N'Tây Ban Nha'),
+  (6,N'Diego Simeone',N'Argentina'),
+  (7,N'Mauricio Pochettino',N'Argentina'),
+  (8,N'Erik ten Hag',N'Hà Lan'),
+  (9,N'Thomas Tuchel',N'Đức'),
+  (10,N'Edin Terzić',N'Bosnia'),
+  (11,N'Simone Inzaghi',N'Ý'),
+  (12,N'Stefano Pioli',N'Ý'),
+  (13,N'Massimiliano Allegri',N'Ý'),
+  (14,N'Luis Enrique',N'Tây Ban Nha'),
+  (15,N'Ange Postecoglou',N'Úc'),
+  (16,N'Eddie Howe',N'Anh'),
+  (17,N'Marco Rose',N'Đức'),
+  (18,N'Rudi Garcia',N'Pháp')
+) AS src(MaHLV,HoTen,QuocTich) ON target.MaHLV=src.MaHLV 
+WHEN NOT MATCHED THEN INSERT(MaHLV,HoTen,QuocTich) VALUES(src.MaHLV,src.HoTen,src.QuocTich);
+GO
+
 MERGE DoiBong AS target USING (VALUES 
   -- Premier League
   (1,N'Manchester City',N'Manchester City FC',N'Premier League'),
@@ -49,6 +79,30 @@ GO
 
 USE SiteB;
 GO
+/* Vertical fragmentation data - Additional coach info */
+MERGE HLV_Additional AS target USING (VALUES 
+  (1,1,'1971-01-18','+34-123-456-001'),
+  (2,2,'1982-03-26','+34-123-456-002'),
+  (3,3,'1967-06-16','+49-123-456-003'),
+  (4,4,'1959-06-10','+39-123-456-004'),
+  (5,5,'1980-01-25','+34-123-456-005'),
+  (6,6,'1970-04-28','+54-123-456-006'),
+  (7,7,'1972-03-02','+54-123-456-007'),
+  (8,8,'1970-02-02','+31-123-456-008'),
+  (9,9,'1973-08-29','+49-123-456-009'),
+  (10,10,'1982-10-30','+387-123-456-010'),
+  (11,11,'1976-04-05','+39-123-456-011'),
+  (12,12,'1965-10-20','+39-123-456-012'),
+  (13,13,'1967-08-11','+39-123-456-013'),
+  (14,14,'1970-05-08','+34-123-456-014'),
+  (15,15,'1965-08-27','+61-123-456-015'),
+  (16,16,'1977-11-29','+44-123-456-016'),
+  (17,17,'1976-09-11','+49-123-456-017'),
+  (18,18,'1964-02-20','+33-123-456-018')
+) AS src(MaHLV,MaDB,NgaySinh,SoDienThoai) ON target.MaHLV=src.MaHLV 
+WHEN NOT MATCHED THEN INSERT(MaHLV,MaDB,NgaySinh,SoDienThoai) VALUES(src.MaHLV,src.MaDB,src.NgaySinh,src.SoDienThoai);
+GO
+
 MERGE DoiBong AS target USING (VALUES 
   -- Premier League
   (7,N'Chelsea',N'Chelsea FC',N'Premier League'),
@@ -65,6 +119,30 @@ GO
 
 USE SiteC;
 GO
+/* Vertical fragmentation data - Coach career history */
+MERGE HLV_History AS target USING (VALUES 
+  (1,15,N'HLV Barcelona B',N'4 Premier League, 2 Champions League'),
+  (2,5,N'Trợ lý HLV Man City',N'1 FA Cup với Arsenal'),
+  (3,12,N'HLV Mainz, Dortmund',N'1 Premier League, 1 Champions League'),
+  (4,28,N'HLV Juventus, Milan',N'5 Champions League, nhiều giải quốc gia'),
+  (5,4,N'HLV Barcelona B, Al Sadd',N'La Liga 2022-23'),
+  (6,13,N'Cầu thủ Atletico',N'2 La Liga, 2 Europa League'),
+  (7,15,N'HLV Espanyol, Southampton',N'Á quân Champions League với Tottenham'),
+  (8,4,N'HLV Ajax',N'3 Eredivisie, 1 Champions League'),
+  (9,12,N'HLV Mainz, Dortmund, PSG',N'1 Champions League, nhiều giải quốc gia'),
+  (10,3,N'Trợ lý HLV Dortmund',N'DFB-Pokal 2020-21'),
+  (11,8,N'HLV Lazio',N'Coppa Italia, Supercoppa Italiana'),
+  (12,7,N'HLV Fiorentina, Lazio',N'Scudetto 2021-22'),
+  (13,9,N'HLV Cagliari, Milan',N'Nhiều Serie A với Juventus'),
+  (14,14,N'HLV Barcelona',N'1 Champions League, nhiều La Liga'),
+  (15,2,N'HLV Yokohama, Celtic',N'Treble với Celtic'),
+  (16,4,N'HLV Bournemouth',N'Top 4 Premier League'),
+  (17,6,N'HLV Salzburg, Gladbach',N'Vô địch Áo, top Bundesliga'),
+  (18,8,N'HLV Marseille, Lyon',N'Ligue 1 runners-up')
+) AS src(MaHLV,NamKinhNghiem,ChucVuTruoc,ThanhTich) ON target.MaHLV=src.MaHLV 
+WHEN NOT MATCHED THEN INSERT(MaHLV,NamKinhNghiem,ChucVuTruoc,ThanhTich) VALUES(src.MaHLV,src.NamKinhNghiem,src.ChucVuTruoc,src.ThanhTich);
+GO
+
 MERGE DoiBong AS target USING (VALUES 
   -- Serie A
   (13,N'Juventus',N'Juventus FC',N'Serie A'),
@@ -277,6 +355,18 @@ SELECT * FROM SiteA.dbo.ThamGia UNION ALL
 SELECT * FROM SiteB.dbo.ThamGia UNION ALL
 SELECT * FROM SiteC.dbo.ThamGia;
 GO
+/* Vertical fragmentation view - JOIN all fragments */
+IF OBJECT_ID('HuanLuyenVien','V') IS NOT NULL DROP VIEW HuanLuyenVien;
+GO
+CREATE VIEW HuanLuyenVien AS
+SELECT 
+    b.MaHLV, b.HoTen, b.QuocTich,
+    a.MaDB, a.NgaySinh, a.SoDienThoai,
+    h.NamKinhNghiem, h.ChucVuTruoc, h.ThanhTich
+FROM SiteA.dbo.HLV_Basic b
+JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
+JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
+GO
 
 /* Helper function to choose site by key */
 IF OBJECT_ID('dbo.fn_SelectSite','FN') IS NOT NULL DROP FUNCTION dbo.fn_SelectSite;
@@ -377,4 +467,40 @@ BEGIN
 END;
 GO
 
-PRINT 'Initialization complete.';
+/* Vertical fragmentation trigger - distribute to different fragments */
+IF OBJECT_ID('trg_HuanLuyenVien_IO','TR') IS NOT NULL DROP TRIGGER trg_HuanLuyenVien_IO;
+GO
+CREATE TRIGGER trg_HuanLuyenVien_IO ON HuanLuyenVien INSTEAD OF INSERT, UPDATE, DELETE AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+        DELETE FROM SiteA.dbo.HLV_Basic WHERE MaHLV IN (SELECT MaHLV FROM deleted);
+        DELETE FROM SiteB.dbo.HLV_Additional WHERE MaHLV IN (SELECT MaHLV FROM deleted);
+        DELETE FROM SiteC.dbo.HLV_History WHERE MaHLV IN (SELECT MaHLV FROM deleted);
+    END
+    IF EXISTS(SELECT 1 FROM inserted) BEGIN
+        -- Insert/Update to SiteA (Basic info)
+        MERGE SiteA.dbo.HLV_Basic AS t 
+        USING (SELECT MaHLV, HoTen, QuocTich FROM inserted) AS s
+        ON t.MaHLV = s.MaHLV
+        WHEN MATCHED THEN UPDATE SET HoTen=s.HoTen, QuocTich=s.QuocTich
+        WHEN NOT MATCHED THEN INSERT(MaHLV, HoTen, QuocTich) VALUES(s.MaHLV, s.HoTen, s.QuocTich);
+        
+        -- Insert/Update to SiteB (Additional info)
+        MERGE SiteB.dbo.HLV_Additional AS t 
+        USING (SELECT MaHLV, MaDB, NgaySinh, SoDienThoai FROM inserted) AS s
+        ON t.MaHLV = s.MaHLV
+        WHEN MATCHED THEN UPDATE SET MaDB=s.MaDB, NgaySinh=s.NgaySinh, SoDienThoai=s.SoDienThoai
+        WHEN NOT MATCHED THEN INSERT(MaHLV, MaDB, NgaySinh, SoDienThoai) VALUES(s.MaHLV, s.MaDB, s.NgaySinh, s.SoDienThoai);
+        
+        -- Insert/Update to SiteC (History)
+        MERGE SiteC.dbo.HLV_History AS t 
+        USING (SELECT MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich FROM inserted) AS s
+        ON t.MaHLV = s.MaHLV
+        WHEN MATCHED THEN UPDATE SET NamKinhNghiem=s.NamKinhNghiem, ChucVuTruoc=s.ChucVuTruoc, ThanhTich=s.ThanhTich
+        WHEN NOT MATCHED THEN INSERT(MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich) VALUES(s.MaHLV, s.NamKinhNghiem, s.ChucVuTruoc, s.ThanhTich);
+    END
+END;
+GO
+
+PRINT 'Initialization complete - Horizontal & Vertical Fragmentation ready.';
