@@ -4,27 +4,17 @@ $pageTitle='Huấn luyện viên';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'add') {
-        runQuery($conn, 'INSERT INTO HuanLuyenVien (MaHLV, HoTen, QuocTich, MaDB, NgaySinh, SoDienThoai, NamKinhNghiem, ChucVuTruoc, ThanhTich) VALUES (?,?,?,?,?,?,?,?,?)', [ 
+        runQuery($conn, 'INSERT INTO HuanLuyenVien (MaHLV, HoTen, QuocTich, MaDB) VALUES (?,?,?,?)', [ 
             (int)$_POST['MaHLV'], 
             $_POST['HoTen'], 
             $_POST['QuocTich'], 
-            (int)$_POST['MaDB'], 
-            $_POST['NgaySinh'], 
-            $_POST['SoDienThoai'], 
-            (int)$_POST['NamKinhNghiem'], 
-            $_POST['ChucVuTruoc'], 
-            $_POST['ThanhTich'] 
+            (int)$_POST['MaDB']
         ]);
     } elseif ($action === 'update') {
-        runQuery($conn, 'UPDATE HuanLuyenVien SET HoTen=?, QuocTich=?, MaDB=?, NgaySinh=?, SoDienThoai=?, NamKinhNghiem=?, ChucVuTruoc=?, ThanhTich=? WHERE MaHLV=?', [ 
+        runQuery($conn, 'UPDATE HuanLuyenVien SET HoTen=?, QuocTich=?, MaDB=? WHERE MaHLV=?', [ 
             $_POST['HoTen'], 
             $_POST['QuocTich'], 
-            (int)$_POST['MaDB'], 
-            $_POST['NgaySinh'], 
-            $_POST['SoDienThoai'], 
-            (int)$_POST['NamKinhNghiem'], 
-            $_POST['ChucVuTruoc'], 
-            $_POST['ThanhTich'], 
+            (int)$_POST['MaDB'],
             (int)$_POST['MaHLV'] 
         ]);
     } elseif ($action === 'delete') {
@@ -50,12 +40,7 @@ include '../includes/header.php';
             <div class="mb-2"><label class="form-label">Mã HLV</label><input name="MaHLV" type="number" class="form-control form-control-sm" required></div>
             <div class="mb-2"><label class="form-label">Họ tên</label><input name="HoTen" class="form-control form-control-sm" required></div>
             <div class="mb-2"><label class="form-label">Quốc tịch</label><input name="QuocTich" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Mã đội bóng</label><input name="MaDB" type="number" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Ngày sinh</label><input name="NgaySinh" type="date" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Số điện thoại</label><input name="SoDienThoai" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Năm kinh nghiệm</label><input name="NamKinhNghiem" type="number" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Chức vụ trước</label><input name="ChucVuTruoc" class="form-control form-control-sm" required></div>
-            <div class="mb-3"><label class="form-label">Thành tích</label><textarea name="ThanhTich" class="form-control form-control-sm" rows="2" required></textarea></div>
+            <div class="mb-3"><label class="form-label">Mã đội bóng</label><input name="MaDB" type="number" class="form-control form-control-sm" required></div>
             <div class="d-flex gap-2"><button name="action" value="add" class="btn btn-success btn-sm">Thêm</button><button name="action" value="update" class="btn btn-warning btn-sm">Cập nhật</button></div>
           </form>
         </div>

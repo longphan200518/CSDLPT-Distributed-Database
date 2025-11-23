@@ -364,8 +364,8 @@ SELECT
     a.MaDB, a.NgaySinh, a.SoDienThoai,
     h.NamKinhNghiem, h.ChucVuTruoc, h.ThanhTich
 FROM SiteA.dbo.HLV_Basic b
-JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
-JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
+LEFT JOIN SiteB.dbo.HLV_Additional a ON b.MaHLV = a.MaHLV
+LEFT JOIN SiteC.dbo.HLV_History h ON b.MaHLV = h.MaHLV;
 GO
 
 /* Helper function to choose site by key */
@@ -479,23 +479,24 @@ BEGIN
         DELETE FROM SiteC.dbo.HLV_History WHERE MaHLV IN (SELECT MaHLV FROM deleted);
     END
     IF EXISTS(SELECT 1 FROM inserted) BEGIN
-        -- Insert/Update to SiteA (Basic info)
+        -- Insert/Update to SiteA (Basic info: MaHLV, HoTen, QuocTich)
         MERGE SiteA.dbo.HLV_Basic AS t 
         USING (SELECT MaHLV, HoTen, QuocTich FROM inserted) AS s
         ON t.MaHLV = s.MaHLV
         WHEN MATCHED THEN UPDATE SET HoTen=s.HoTen, QuocTich=s.QuocTich
         WHEN NOT MATCHED THEN INSERT(MaHLV, HoTen, QuocTich) VALUES(s.MaHLV, s.HoTen, s.QuocTich);
         
-        -- Insert/Update to SiteB (Additional info)
+        -- Insert/Update to SiteB (Additional info: MaHLV, MaDB only)
         MERGE SiteB.dbo.HLV_Additional AS t 
-        USING (SELECT MaHLV, MaDB, NgaySinh, SoDienThoai FROM inserted) AS s
+        USING (SELECT MaHLV, MaDB FROM inserted) AS s
         ON t.MaHLV = s.MaHLV
-        WHEN MATCHED THEN UPDATE SET MaDB=s.MaDB, NgaySinh=s.NgaySinh, SoDienThoai=s.SoDienThoai
-        WHEN NOT MATCHED THEN INSERT(MaHLV, MaDB, NgaySinh, SoDienThoai) VALUES(s.MaHLV, s.MaDB, s.NgaySinh, s.SoDienThoai);
+        WHEN MATCHED THEN UPDATE SET MaDB=s.MaDB
+        WHEN NOT MATCHED THEN INSERT(MaHLV, MaDB) VALUES(s.MaHLV, s.MaDB);
         
-        -- Insert/Update to SiteC (History)
+        -- SiteC (History) only updated if data provided
         MERGE SiteC.dbo.HLV_History AS t 
-        USING (SELECT MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich FROM inserted) AS s
+        USING (SELECT MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich FROM inserted 
+               WHERE NamKinhNghiem IS NOT NULL OR ChucVuTruoc IS NOT NULL OR ThanhTich IS NOT NULL) AS s
         ON t.MaHLV = s.MaHLV
         WHEN MATCHED THEN UPDATE SET NamKinhNghiem=s.NamKinhNghiem, ChucVuTruoc=s.ChucVuTruoc, ThanhTich=s.ThanhTich
         WHEN NOT MATCHED THEN INSERT(MaHLV, NamKinhNghiem, ChucVuTruoc, ThanhTich) VALUES(s.MaHLV, s.NamKinhNghiem, s.ChucVuTruoc, s.ThanhTich);
