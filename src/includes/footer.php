@@ -1,7 +1,7 @@
 </div>
 <footer class="text-center">
   <div class="container">
-    <p class="mb-1">Đồ án CSDL Phân Tán &copy; 2025</p>
+    <p class="mb-1">Đồ án CSDL Phân Tán © 2025</p>
     <p class="small-muted">Trigger định tuyến theo băm khóa chính (ABS(key)%3).</p>
   </div>
 </footer>

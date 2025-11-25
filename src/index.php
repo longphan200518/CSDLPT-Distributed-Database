@@ -35,8 +35,8 @@ include __DIR__.'/includes/header.php';
 </div>
 <div class="row g-4">
   <div class="col-md-6">
-    <div class="card h-100 border-primary">
-      <div class="card-header fw-semibold bg-primary text-white">CRUD - Phân mảnh dọc <span class="badge badge-hash">NEW</span></div>
+    <div class="card h-100">
+      <div class="card-header fw-semibold">CRUD - Phân mảnh dọc</div>
       <div class="card-body">
         <div class="list-group list-group-flush">
           <a class="list-group-item list-group-item-action" href="crud/huanluyenvien.php">
@@ -48,8 +48,8 @@ include __DIR__.'/includes/header.php';
     </div>
   </div>
   <div class="col-md-6">
-    <div class="card h-100 border-primary">
-      <div class="card-header fw-semibold bg-primary text-white">Truy vấn phân mảnh dọc <span class="badge badge-hash">NEW</span></div>
+    <div class="card h-100">
+      <div class="card-header fw-semibold">Truy vấn phân mảnh dọc</div>
       <div class="card-body">
         <div class="list-group list-group-flush">
           <a class="list-group-item list-group-item-action" href="queries/hlv_theo_giaidau.php">
