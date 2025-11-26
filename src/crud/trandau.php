@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         runQuery($conn, 'DELETE FROM TranDau WHERE MaTD=?', [ (int)$_POST['MaTD'] ]);
     }
 }
-$stmt = runQuery($conn, 'SELECT * FROM TranDau ORDER BY MaTD');
+$stmt = runQuery($conn, 'SELECT td.MaTD, td.MaDB1, d1.TenDB AS TenDB1, d1.CLB AS CLB1, d1.GiaiDau AS GiaiDau1, td.MaDB2, d2.TenDB AS TenDB2, d2.CLB AS CLB2, d2.GiaiDau AS GiaiDau2, td.TrongTai, td.SanDau FROM TranDau td JOIN DoiBong d1 ON td.MaDB1=d1.MaDB JOIN DoiBong d2 ON td.MaDB2=d2.MaDB ORDER BY td.MaTD');
 $rows=[]; while($r=sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){$rows[]=$r;}
 include '../includes/header.php';
 ?>
@@ -47,10 +47,22 @@ include '../includes/header.php';
         <div class="card-header">Danh sách</div>
         <div class="card-body">
           <table class="table table-sm table-hover align-middle">
-            <thead><tr><th>Mã TD</th><th>Đội 1</th><th>Đội 2</th><th>Trọng tài</th><th>Sân</th></tr></thead>
+            <thead><tr><th>Mã TD</th><th>Đội 1</th><th>Đội 2</th><th>Trọng tài</th><th>Sân đấu</th></tr></thead>
             <tbody>
             <?php foreach($rows as $r):?>
-              <tr><td><?=$r['MaTD']?></td><td><?=$r['MaDB1']?></td><td><?=$r['MaDB2']?></td><td><?=htmlspecialchars($r['TrongTai'])?></td><td><?=htmlspecialchars($r['SanDau'])?></td></tr>
+              <tr>
+                <td><?=$r['MaTD']?></td>
+                <td>
+                  <strong><?=htmlspecialchars($r['TenDB1'])?></strong><br>
+                  <small class="text-muted">CLB: <?=htmlspecialchars($r['CLB1'])?> | Giải: <?=htmlspecialchars($r['GiaiDau1'])?></small>
+                </td>
+                <td>
+                  <strong><?=htmlspecialchars($r['TenDB2'])?></strong><br>
+                  <small class="text-muted">CLB: <?=htmlspecialchars($r['CLB2'])?> | Giải: <?=htmlspecialchars($r['GiaiDau2'])?></small>
+                </td>
+                <td><?=htmlspecialchars($r['TrongTai'])?></td>
+                <td><?=htmlspecialchars($r['SanDau'])?></td>
+              </tr>
             <?php endforeach; ?>
             </tbody>
           </table>
