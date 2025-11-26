@@ -387,16 +387,21 @@ GO
 CREATE TRIGGER trg_DoiBong_IO ON DoiBong INSTEAD OF INSERT, UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+    -- Pure DELETE (no inserted rows)
+    IF EXISTS(SELECT 1 FROM deleted) AND NOT EXISTS(SELECT 1 FROM inserted) BEGIN
         DELETE a FROM SiteA.dbo.DoiBong a JOIN deleted d ON a.MaDB=d.MaDB;
         DELETE b FROM SiteB.dbo.DoiBong b JOIN deleted d ON b.MaDB=d.MaDB;
         DELETE c FROM SiteC.dbo.DoiBong c JOIN deleted d ON c.MaDB=d.MaDB;
     END
+    
+    -- INSERT or UPDATE: MERGE into correct site
     IF EXISTS(SELECT 1 FROM inserted) BEGIN
         MERGE SiteA.dbo.DoiBong AS t USING (SELECT * FROM inserted WHERE ABS(MaDB)%3=0) AS s(MaDB,TenDB,CLB,GiaiDau)
         ON t.MaDB=s.MaDB WHEN MATCHED THEN UPDATE SET TenDB=s.TenDB, CLB=s.CLB, GiaiDau=s.GiaiDau WHEN NOT MATCHED THEN INSERT(MaDB,TenDB,CLB,GiaiDau) VALUES(s.MaDB,s.TenDB,s.CLB,s.GiaiDau);
+        
         MERGE SiteB.dbo.DoiBong AS t USING (SELECT * FROM inserted WHERE ABS(MaDB)%3=1) AS s(MaDB,TenDB,CLB,GiaiDau)
         ON t.MaDB=s.MaDB WHEN MATCHED THEN UPDATE SET TenDB=s.TenDB, CLB=s.CLB, GiaiDau=s.GiaiDau WHEN NOT MATCHED THEN INSERT(MaDB,TenDB,CLB,GiaiDau) VALUES(s.MaDB,s.TenDB,s.CLB,s.GiaiDau);
+        
         MERGE SiteC.dbo.DoiBong AS t USING (SELECT * FROM inserted WHERE ABS(MaDB)%3=2) AS s(MaDB,TenDB,CLB,GiaiDau)
         ON t.MaDB=s.MaDB WHEN MATCHED THEN UPDATE SET TenDB=s.TenDB, CLB=s.CLB, GiaiDau=s.GiaiDau WHEN NOT MATCHED THEN INSERT(MaDB,TenDB,CLB,GiaiDau) VALUES(s.MaDB,s.TenDB,s.CLB,s.GiaiDau);
     END
@@ -409,7 +414,8 @@ GO
 CREATE TRIGGER trg_CauThu_IO ON CauThu INSTEAD OF INSERT, UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+    -- Only DELETE if it's a real DELETE (not UPDATE)
+    IF EXISTS(SELECT 1 FROM deleted) AND NOT EXISTS(SELECT 1 FROM inserted) BEGIN
         DELETE a FROM SiteA.dbo.CauThu a JOIN deleted d ON a.MaCT=d.MaCT;
         DELETE b FROM SiteB.dbo.CauThu b JOIN deleted d ON b.MaCT=d.MaCT;
         DELETE c FROM SiteC.dbo.CauThu c JOIN deleted d ON c.MaCT=d.MaCT;
@@ -430,7 +436,8 @@ GO
 CREATE TRIGGER trg_TranDau_IO ON TranDau INSTEAD OF INSERT, UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+    -- Only DELETE if it's a real DELETE (not UPDATE)
+    IF EXISTS(SELECT 1 FROM deleted) AND NOT EXISTS(SELECT 1 FROM inserted) BEGIN
         DELETE a FROM SiteA.dbo.TranDau a JOIN deleted d ON a.MaTD=d.MaTD;
         DELETE b FROM SiteB.dbo.TranDau b JOIN deleted d ON b.MaTD=d.MaTD;
         DELETE c FROM SiteC.dbo.TranDau c JOIN deleted d ON c.MaTD=d.MaTD;
@@ -451,7 +458,8 @@ GO
 CREATE TRIGGER trg_ThamGia_IO ON ThamGia INSTEAD OF INSERT, UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+    -- Only DELETE if it's a real DELETE (not UPDATE)
+    IF EXISTS(SELECT 1 FROM deleted) AND NOT EXISTS(SELECT 1 FROM inserted) BEGIN
         DELETE a FROM SiteA.dbo.ThamGia a JOIN deleted d ON a.MaTD=d.MaTD AND a.MaCT=d.MaCT;
         DELETE b FROM SiteB.dbo.ThamGia b JOIN deleted d ON b.MaTD=d.MaTD AND b.MaCT=d.MaCT;
         DELETE c FROM SiteC.dbo.ThamGia c JOIN deleted d ON c.MaTD=d.MaTD AND c.MaCT=d.MaCT;
@@ -473,7 +481,8 @@ GO
 CREATE TRIGGER trg_HuanLuyenVien_IO ON HuanLuyenVien INSTEAD OF INSERT, UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS(SELECT 1 FROM deleted) BEGIN
+    -- Only DELETE if it's a real DELETE (not UPDATE)
+    IF EXISTS(SELECT 1 FROM deleted) AND NOT EXISTS(SELECT 1 FROM inserted) BEGIN
         DELETE FROM SiteA.dbo.HLV_Basic WHERE MaHLV IN (SELECT MaHLV FROM deleted);
         DELETE FROM SiteB.dbo.HLV_Additional WHERE MaHLV IN (SELECT MaHLV FROM deleted);
         DELETE FROM SiteC.dbo.HLV_History WHERE MaHLV IN (SELECT MaHLV FROM deleted);
