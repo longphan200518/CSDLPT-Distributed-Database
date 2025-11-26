@@ -22,31 +22,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $stmt = runQuery($conn, 'SELECT * FROM HuanLuyenVien ORDER BY MaHLV');
-$rows = [];
+        <div class="page-section">
 while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) { $rows[] = $r; }
-include '../includes/header.php';
-?>
-<div class="mb-4">
+          <div class="alert alert-info mb-4">
+            <strong>Phân mảnh dọc:</strong> Basic (SiteA) · Additional (SiteB) · History (SiteC tùy chọn). View toàn cục JOIN tự động.
   <h2 class="fw-semibold mb-3">Quản lý Huấn luyện viên <span class="badge badge-hash">Phân mảnh dọc</span></h2>
   <div class="alert alert-info">
     <strong>Phân mảnh dọc:</strong> Dữ liệu được chia theo cột - Thông tin cơ bản (SiteA), Thông tin bổ sung (SiteB), Lịch sử sự nghiệp (SiteC). View toàn cục JOIN tự động.
   </div>
   <div class="row g-4">
     <div class="col-lg-5">
-      <div class="card mb-3">
-        <div class="card-header">Thêm / Cập nhật</div>
-        <div class="card-body">
-          <form method="post">
-            <div class="mb-2"><label class="form-label">Mã HLV</label><input name="MaHLV" type="number" class="form-control form-control-sm" required></div>
-            <div class="mb-2"><label class="form-label">Họ tên</label><input name="HoTen" class="form-control form-control-sm" required></div>
+                  <form method="post" class="form-inline-grid" aria-label="Form thêm hoặc cập nhật huấn luyện viên">
+                    <div><label class="form-label">Mã HLV</label><input name="MaHLV" type="number" class="form-control" required></div>
+                    <div><label class="form-label">Họ tên</label><input name="HoTen" class="form-control" required></div>
+                    <div><label class="form-label">Quốc tịch</label><input name="QuocTich" class="form-control" required></div>
+                    <div><label class="form-label">Mã đội bóng</label><input name="MaDB" type="number" class="form-control" required></div>
+                    <div class="form-actions"><button name="action" value="add" class="btn btn-success btn-sm">Thêm</button><button name="action" value="update" class="btn btn-warning btn-sm">Cập nhật</button></div>
             <div class="mb-2"><label class="form-label">Quốc tịch</label><input name="QuocTich" class="form-control form-control-sm" required></div>
             <div class="mb-3"><label class="form-label">Mã đội bóng</label><input name="MaDB" type="number" class="form-control form-control-sm" required></div>
             <div class="d-flex gap-2"><button name="action" value="add" class="btn btn-success btn-sm">Thêm</button><button name="action" value="update" class="btn btn-warning btn-sm">Cập nhật</button></div>
           </form>
         </div>
       </div>
-      <div class="card">
-        <div class="card-header">Xóa</div>
+                  <form method="post" class="row g-2 align-items-end" aria-label="Form xóa huấn luyện viên">
+                    <div class="col-8"><label class="form-label">Mã HLV</label><input name="MaHLV" type="number" class="form-control" required></div>
         <div class="card-body">
           <form method="post" class="row g-2 align-items-end">
             <div class="col-8"><label class="form-label">Mã HLV</label><input name="MaHLV" type="number" class="form-control form-control-sm" required></div>
